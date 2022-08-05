@@ -29,7 +29,11 @@ void loop()
    turn down the volume = 20DFC03F
    power off/on = 20DF10EF
    Netflix button = 20DF6A95
-
+   left: 0x20DFE01F
+   up: 0x20DF02FD
+   right: 0x20DF609F
+   down: 0x20DF827D
+   select button: 0x20DF22DD 
 
  * 
  * 

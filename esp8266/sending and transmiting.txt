@@ -1,4 +1,11 @@
 
+#ifndef UNIT_TEST
+#include <Arduino.h>
+#endif
+#include <IRremoteESP8266.h>
+#include <IRsend.h>
+
+
 #include <Arduino.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
@@ -82,9 +89,12 @@ const uint16_t kMinUnknownSize = 12;
 IRrecv irrecv(kRecvPin, kCaptureBufferSize, kTimeout, true);
 decode_results results;  // Somewhere to store the results
 
-// This section of code runs only once at start-up.
+const uint16_t kIrLed = 4;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
+IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
+// Example of data captured by IRrecvDumpV2.ino replace the array below with the numbers captured by IRrecvDumpV2.ino from the serial monitor 
+uint16_t rawData[71] = {9146, 4356,  752, 460,  478, 628,  556, 1632,  606, 582,  500, 586,  546, 610,  656, 458,  690, 482,  550, 1640,  650, 1680,  588, 462,  598, 1636,  654, 1586,  636, 1746,  464, 1636,  686, 1556,  658, 550,  482, 584,  644, 486,  602, 1676,  560, 590,  544, 542,  544, 582,  596, 538,  600, 1636,  556, 1684,  660, 1582,  660, 480,  548, 1684,  638, 1602,  558, 1684,  598, 1642,  658, 39938,  9046, 2212,  558}; 
 void setup() {
-#if defined(ESP8266)
+  #if defined(ESP8266)
   Serial.begin(kBaudRate, SERIAL_8N1, SERIAL_TX_ONLY);
 #else  // ESP8266
   Serial.begin(kBaudRate, SERIAL_8N1);
@@ -97,10 +107,13 @@ void setup() {
   irrecv.setUnknownThreshold(kMinUnknownSize);
 #endif  // DECODE_HASH
   irrecv.enableIRIn();  // Start the receiver
+  irsend.begin();
+  Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
+  pinMode(D7,INPUT);
+  pinMode(D1,OUTPUT);
 }
-
-// The repeating section of the code
 void loop() {
+
   // Check if the IR code has been received.
   if (irrecv.decode(&results)) {
     // Display a crude timestamp.
@@ -127,4 +140,25 @@ void loop() {
     Serial.println();    // Blank line between entries
     yield();             // Feed the WDT (again)
   }
+
+if(results.value == 0x4040708F ){digitalWrite(D1,HIGH);
+#if SEND_RAW
+  Serial.println("a rawData capture from IRrecvDumpV2");
+  irsend.sendRaw(rawData, 71, 38);  // Send a raw data capture at 38kHz.
+#endif  // SEND_RAW
+
+ delay(300);
 }
+
+if(digitalRead(D7)==HIGH){
+#if SEND_RAW
+  Serial.println("a rawData capture from IRrecvDumpV2");
+  irsend.sendRaw(rawData, 71, 38);  // Send a raw data capture at 38kHz.
+#endif  // SEND_RAW
+digitalWrite(D1,HIGH);
+ delay(300);
+}
+
+digitalWrite(D1,LOW);
+}
+
