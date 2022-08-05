@@ -1,0 +1,38 @@
+#include <IRremote.h>
+int receiver = 13;
+IRrecv irrecv(receiver);
+decode_results results;
+
+void setup()
+{
+  Serial.begin(115200);
+  irrecv.enableIRIn();
+}
+void loop()
+{
+  if(irrecv.decode(&results)){
+    Serial.println (results.value, HEX);
+    irrecv.resume();
+    }
+     if(results.value == 0x4040708F){
+      digitalWrite(7,HIGH);
+      }
+}
+
+/* left = 40408877
+   up = 4040D02F
+   right = 404008F7
+   down = 4040708F
+   old remotewwwwwwwwwwwwwwwwwwww
+
+   rise the volume = 20DF40BF
+   turn down the volume = 20DFC03F
+   power off/on = 20DF10EF
+   Netflix button = 20DF6A95
+
+
+ * 
+ * 
+ * 
+ * 
+ */

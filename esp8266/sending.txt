@@ -1,0 +1,21 @@
+
+#ifndef UNIT_TEST
+#include <Arduino.h>
+#endif
+#include <IRremoteESP8266.h>
+#include <IRsend.h>
+const uint16_t kIrLed = 4;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
+IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
+// Example of data captured by IRrecvDumpV2.ino replace the array below with the numbers captured by IRrecvDumpV2.ino from the serial monitor 
+uint16_t rawData[71] = {9094, 4442,  656, 474,  708, 1540,  576, 554,  682, 446,  628, 498,  600, 528,  552, 578,  626, 502,  550, 580,  550, 1700,  550, 578,  626, 502,  552, 578,  550, 578,  592, 536,  550, 578,  550, 578,  552, 1698,  594, 1656,  596, 1654,  598, 530,  604, 526,  608, 522,  550, 578,  578, 1670,  658, 472,  622, 506,  550, 580,  606, 1644,  580, 1670,  578, 1672,  604, 1652,  580, 46630,  9046, 2236,  580};
+void setup() {
+  irsend.begin();
+  Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
+}
+void loop() {
+#if SEND_RAW
+  Serial.println("a rawData capture from IRrecvDumpV2");
+  irsend.sendRaw(rawData, 71, 38);  // Send a raw data capture at 38kHz.
+#endif  // SEND_RAW
+  delay(2000);
+}
